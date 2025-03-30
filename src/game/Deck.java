@@ -2,6 +2,7 @@
 package game;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 
 public class Deck {
@@ -11,7 +12,10 @@ public class Deck {
     public Deck() {
         initializeDeck();
         shuffle();
-        setTrumpCard();
+        // Корректное определение козыря
+        if (!cards.isEmpty()) {
+            trumpCard = cards.lastElement(); // Козырь - последняя карта в колоде
+        }
     }
 
     private void initializeDeck() {
@@ -24,7 +28,7 @@ public class Deck {
 
     public void shuffle() {
         Collections.shuffle(cards);
-        // После перемешивания обновляем козырную карту
+        // После перемешивания обновляем козырь
         if (!cards.isEmpty()) {
             trumpCard = cards.lastElement();
         }
@@ -35,7 +39,7 @@ public class Deck {
             return null;
         }
         Card card = cards.pop();
-        // Если после взятия карты колода пуста, сбрасываем козырь
+        // Если колода опустела - сброс козыря
         if (cards.isEmpty()) {
             trumpCard = null;
         }
@@ -58,12 +62,10 @@ public class Deck {
         return cards.size();
     }
 
-    // Проверка наличия конкретной карты в колоде
     public boolean contains(Card card) {
         return cards.contains(card);
     }
 
-    // Получение карты по индексу (для отладки)
     public Card getCard(int index) {
         if (index >= 0 && index < cards.size()) {
             return cards.get(index);
@@ -71,13 +73,11 @@ public class Deck {
         return null;
     }
 
-    // Метод для проверки корректности колоды
     public boolean isValid() {
-        int[] counts = new int[4]; // Для подсчета мастей
+        int[] counts = new int[4];
         for (Card card : cards) {
             counts[card.getSuit().ordinal()]++;
         }
-        // В колоде должно быть по 9 карт каждой масти (6-14)
         for (int count : counts) {
             if (count != 9) {
                 return false;
@@ -86,13 +86,12 @@ public class Deck {
         return true;
     }
 
-    // Восстановление колоды из отбоя (для будущих версий)
+    // Исправлено: добавлен импорт List и удалена лишняя логика
     public void addCards(List<Card> cardsToAdd) {
         cards.addAll(cardsToAdd);
         shuffle();
     }
 
-    // Отладочный вывод колоды
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
