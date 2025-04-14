@@ -44,11 +44,12 @@ public class GameAnalyzer {
         return probabilityEngine.getTrumpThreatLevel(trump) < 0.3;
     }
 
+    // Исправленный метод с передачей currentTrump
     public List<Card> getOptimalDefenseOptions(Card attackCard, Suit trump) {
         List<Card> candidates = new ArrayList<>();
         
         // Кандидаты той же масти
-        candidates.addAll(memory.getCardsBySuit(attackCard.getSuit()).stream()
+        candidates.addAll(memory.getTrumpCards(trump).stream() // Использование getTrumpCards
                 .filter(c -> c.getValue() > attackCard.getValue())
                 .toList());
         
@@ -155,10 +156,32 @@ public class GameAnalyzer {
         return synergy;
     }
 
-    public void logAnalysis() {
-        System.out.println("=== Анализ игры ===");
-        System.out.printf("Оставшиеся карты: %d%n", probabilityEngine.getTotalUnknown());
-        System.out.printf("Угроза козырей: %.2f%%%n", probabilityEngine.getTrumpThreatLevel(currentState.trump) * 100);
-        System.out.printf("Риск текущей атаки: %.2f%%%n", calculateRiskLevel(currentState.table.get(0), currentState.trump));
+  // Исправленный метод logAnalysis
+  public void logAnalysis() {
+    System.out.println("=== Анализ игры ===");
+    System.out.printf("Оставшиеся карты: %d%n", probabilityEngine.getTotalUnknown());
+    System.out.printf("Угроза козырей: %.2f%%%n", 
+        probabilityEngine.getTrumpThreatLevel(currentTrump) * 100); // Использование currentTrump
+    System.out.printf("Риск текущей атаки: %.2f%%%n", 
+        calculateRiskLevel(currentState.table.get(0), currentTrump));
+}
+
+    // Вложенный класс GameState
+    private class GameState {
+        private List<Card> table;
+        private int deckSize;
+        private double trumpThreat;
+        
+        public void update(List<Card> table, int deckSize, double trumpThreat) {
+            this.table = new ArrayList<>(table);
+            this.deckSize = deckSize;
+            this.trumpThreat = trumpThreat;
+        }
+        
+        // Геттеры для доступа к данным
+        public List<Card> getTable() {
+            return table;
+        }
     }
 }
+
