@@ -53,9 +53,9 @@ chcp 65001
 ## Logging System
 The AI logs its decisions in a structured format, e.g.:
 ```
-[AI] I need to cover Queen ♠. My lowest option is 10♠, but I have a small trump 7♡.
-[AI] Using 10♠ to preserve my trump for later.
-[AI] Opponent picked up 8♣. I should throw in 9♣.
+[AIBOT1] I need to cover Queen ♠. My lowest option is 10♠, but I have a small trump 7♡.
+[AIAIBOT1] Using 10♠ to preserve my trump for later.
+[AIAIBOT1] Opponent picked up 8♣. I should throw in 9♣.
 ```
 This allows for debugging and improvement of AI logic.
 
