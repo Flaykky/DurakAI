@@ -58,7 +58,7 @@ The AI logs its decisions in a structured format, e.g.:
 [AI BOT?]Opponent picked up 8♣. I should throw in 9♣.
 ```
 
-**? - level of AI**
+**? is a level of AI**
 
 This allows for debugging and improvement of AI logic.
 
