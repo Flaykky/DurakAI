@@ -59,6 +59,7 @@ The AI logs its decisions in a structured format, e.g.:
 ```
 
 **? - level of AI**
+
 This allows for debugging and improvement of AI logic.
 
 ## Installation
