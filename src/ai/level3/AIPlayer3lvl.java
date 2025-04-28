@@ -18,7 +18,7 @@ public class AIPlayer3lvl extends AIPlayer2lvl {
 
     public AIPlayer3lvl(String name) {
         super(name);
-        this.analyzer = new GameAnalyzer();
+        this.analyzer = new GameAnalyzer(memory);
         this.patternDetector = new CardPatterns();
     }
 
@@ -33,7 +33,7 @@ public class AIPlayer3lvl extends AIPlayer2lvl {
 
     private List<Card> getStrategicAttackCards() {
         return hand.stream()
-                .filter(c -> !c.getValue().equals(0))  // simple safety check
+                .filter(c -> c.getValue() != 0)  // simple safety check
                 .toList();
     }
 
@@ -44,7 +44,7 @@ public class AIPlayer3lvl extends AIPlayer2lvl {
     }
 
     private void logMemoryStatus() {
-        logger.info("Memory status: " + memory.toString());
+        logger.info("Memory status: {0}", memory);
     }
 
     @Override
