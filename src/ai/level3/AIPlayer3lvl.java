@@ -7,6 +7,7 @@ import ai.level3.memory.CardMemory;
 import ai.level3.utils.CardPatterns;
 import ai.AIPlayer2lvl;
 
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ public class AIPlayer3lvl extends AIPlayer2lvl {
 
     public AIPlayer3lvl(String name) {
         super(name);
-        this.analyzer = new GameAnalyzer(memory);
+        this.analyzer = new GameAnalyzer();
         this.patternDetector = new CardPatterns();
     }
 
@@ -44,7 +45,8 @@ public class AIPlayer3lvl extends AIPlayer2lvl {
     }
 
     private void logMemoryStatus() {
-        logger.info("Memory status: {0}", memory);
+        String logmessage = "Memory status: " + memory.getRememberedCards().size() + " cards remembered.";
+        logger.info(logmessage);
     }
 
     @Override
