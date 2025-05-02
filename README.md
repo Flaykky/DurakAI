@@ -67,13 +67,14 @@ This allows for debugging and improvement of AI logic.
 
 
 .lof file:
-
+```log
 [2023-10-25 14:30:22] [INFO] Game started
 [2023-10-25 14:30:22] [DEBUG] Dealing cards to players
 [2023-10-25 14:30:25] [INFO] Human attacked with 7♥️
 [2023-10-25 14:30:27] [INFO] AI defended with Q♠️
 [2023-10-25 14:31:10] [ERROR] Invalid card selection by Human
 [2023-10-25 14:35:40] [INFO] Game finished. Winner: AI
+```
 
 ## Installation
 1. Clone the repository:
