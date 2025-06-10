@@ -1,67 +1,65 @@
 package ai;
 
-import java.util.List;
 import game.Card;
-import game.Player;
 import game.Game;
-import game.Card.Suit;
+import game.Player;
 
+import java.util.List;
+
+/**
+ * AIPlayer1lvl — самый простой уровень ИИ.
+ * Подкидывает/кроет первую подходящую карту без анализа.
+ */
 public class AIPlayer1lvl extends Player {
 
     public AIPlayer1lvl(String name) {
-        super(name, false); // false — не человек
+        super(name, false); // false = не человек
     }
 
     /**
-     * Атакующий ход: выбирает первую подходящую карту
-     * @param game текущая игра
+     * Выбирает первую подходящую карту для атаки.
+     * @param game текущее состояние игры
      * @param cardsOnTable карты на столе
-     * @return карта для хода или null
+     * @return карта для атаки или null, если нечего играть
      */
     @Override
     public Card playCard(Game game, List<Card> cardsOnTable) {
         List<Card> playableCards = getPlayableCards(cardsOnTable);
-
-        if (!playableCards.isEmpty()) {
-            // Выбираем первую подходящую карту
-            return playableCards.get(0);
+        if (playableCards.isEmpty()) {
+            return null; // Сдаётся, если нет подходящих карт
         }
-
-        return null; // нечем ходить
+        return playableCards.get(0); // Всегда выбирает первую подходящую карту
     }
 
     /**
-     * Защитный ход: выбирает первую карту, которая бьёт атакующую
-     * @param game текущая игра
+     * Выбирает первую подходящую карту для защиты.
+     * @param game текущее состояние игры
      * @param attackCard атакующая карта
-     * @return карта для защиты или null
+     * @return карта для защиты или null, если не может покрыть
      */
     @Override
     public Card defendCard(Game game, Card attackCard) {
-        Suit trumpSuit = game.getDeck().getTrumpSuit();
-        List<Card> beatableCards = getBeatableCards(attackCard, trumpSuit);
-
-        if (!beatableCards.isEmpty()) {
-            // Выбираем первую подходящую карту
-            return beatableCards.get(0);
+        List<Card> beatableCards = getBeatableCards(attackCard, game.getDeck().getTrumpSuit());
+        if (beatableCards.isEmpty()) {
+            return null; // Сдаётся, если не может покрыть
         }
-
-        return null; // нечем крыть
+        return beatableCards.get(0); // Всегда выбирает первую подходящую карту
     }
 
     /**
-     * Возвращает список карт, которые можно сыграть
+     * Возвращает список карт, которые можно сыграть.
      * @param cardsOnTable карты на столе
-     * @return список возможных карт
+     * @return список подходящих карт
      */
+    @Override
     public List<Card> getPlayableCards(List<Card> cardsOnTable) {
         List<Card> playable = new java.util.ArrayList<>();
 
         if (cardsOnTable.isEmpty()) {
-            // Можно ходить любой картой
+            // Если на столе нет карт, можно сыграть любую
             playable.addAll(getHand());
         } else {
-            // Ищем карты с тем же номиналом, что и на столе
+            // Иначе ищем карты с тем же номиналом, что и на столе
             for (Card card : getHand()) {
                 for (Card tableCard : cardsOnTable) {
                     if (card.getRank() == tableCard.getRank()) {
@@ -76,12 +74,13 @@ public class AIPlayer1lvl extends Player {
     }
 
     /**
-     * Возвращает список карт, которые могут побить атакующую
+     * Возвращает список карт, которые могут побить атакующую карту.
      * @param attackCard атакующая карта
      * @param trumpSuit козырная масть
-     * @return список возможных карт
+     * @return список подходящих карт
      */
-    public List<Card> getBeatableCards(Card attackCard, Suit trumpSuit) {
+    @Override
+    public List<Card> getBeatableCards(Card attackCard, Card.Suit trumpSuit) {
         List<Card> beatable = new java.util.ArrayList<>();
         for (Card card : getHand()) {
             if (card.beats(attackCard, trumpSuit)) {
@@ -89,26 +88,5 @@ public class AIPlayer1lvl extends Player {
             }
         }
         return beatable;
-    }
-
-    /**
-     * Сортировка карт по козырям и масти
-     */
-    public void sortHand(Suit trumpSuit) {
-        getHand().sort((c1, c2) -> {
-            // Сначала козыри
-            boolean c1Trump = c1.isTrump(trumpSuit);
-            boolean c2Trump = c2.isTrump(trumpSuit);
-
-            if (c1Trump && !c2Trump) return -1;
-            if (!c1Trump && c2Trump) return 1;
-
-            // Затем по масти
-            int suitComparison = c1.getSuit().compareTo(c2.getSuit());
-            if (suitComparison != 0) return suitComparison;
-
-            // Затем по значению
-            return c1.getRank().compareTo(c2.getRank());
-        });
     }
 }
