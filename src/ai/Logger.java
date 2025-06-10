@@ -1,81 +1,119 @@
 package ai;
 
-import game.Card;
-import game.Player;
-import game.Game;
-import ai.level3.memory.CardMemory;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+/**
+ * Простой логгер для ИИ в игре "Дурак".
+ * Поддерживает уровни логирования: DEBUG, INFO, WARN, ERROR.
+ */
 public class Logger {
-    private final String playerName;
-    private final boolean debugMode = true;
-
-    public Logger(String playerName) {
-        this.playerName = playerName;
+    // Уровни логирования
+    public enum Level {
+        OFF, ERROR, WARN, INFO, DEBUG
     }
 
-    public void log(String message) {
-        if (debugMode) {
-            System.out.println("[" + playerName + "] " + message);
+    // Текущий уровень логирования
+    private static Level logLevel = Level.INFO;
+
+    // Формат даты и времени
+    private static final DateTimeFormatter formatter = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * Устанавливает уровень логирования.
+     * @param level новый уровень
+     */
+    public static void setLogLevel(Level level) {
+        logLevel = level != null ? level : Level.OFF;
+    }
+
+    /**
+     * Логирует сообщение уровня DEBUG.
+     * @param source источник сообщения (например, имя класса)
+     * @param message текст сообщения
+     */
+    public static void debug(String source, String message) {
+        log(source, message, Level.DEBUG);
+    }
+
+    /**
+     * Логирует сообщение уровня INFO.
+     * @param source источник сообщения
+     * @param message текст сообщения
+     */
+    public static void info(String source, String message) {
+        log(source, message, Level.INFO);
+    }
+
+    /**
+     * Логирует сообщение уровня WARN.
+     * @param source источник сообщения
+     * @param message текст сообщения
+     */
+    public static void warn(String source, String message) {
+        log(source, message, Level.WARN);
+    }
+
+    /**
+     * Логирует сообщение уровня ERROR.
+     * @param source источник сообщения
+     * @param message текст сообщения
+     * @param throwable исключение (опционально)
+     */
+    public static void error(String source, String message, Throwable throwable) {
+        log(source, message, Level.ERROR);
+        if (throwable != null) {
+            throwable.printStackTrace();
         }
     }
 
-    public void logError(String message) {
-        System.err.println("[ERROR " + playerName + "] " + message);
+    /**
+     * Общий метод логирования.
+     * @param source источник
+     * @param message текст
+     * @param level уровень логирования
+     */
+    private static void log(String source, String message, Level level) {
+        if (logLevel == Level.OFF || level.ordinal() > logLevel.ordinal()) {
+            return; // Выход, если уровень логирования ниже текущего
+        }
+
+        String timestamp = LocalDateTime.now().format(formatter);
+        String threadName = Thread.currentThread().getName();
+        String logMessage = String.format("[%s] [%s] [%s] %s: %s", 
+            timestamp, threadName, level, source, message);
+
+        switch (level) {
+            case DEBUG:
+                System.out.println("\u001B[34m" + logMessage + "\u001B[0m"); // Синий
+                break;
+            case INFO:
+                System.out.println("\u001B[32m" + logMessage + "\u001B[0m"); // Зеленый
+                break;
+            case WARN:
+                System.out.println("\u001B[33m" + logMessage + "\u001B[0m"); // Желтый
+                break;
+            case ERROR:
+                System.err.println("\u001B[31m" + logMessage + "\u001B[0m"); // Красный
+                break;
+            default:
+                System.out.println(logMessage);
+        }
     }
 
-    public void logGameState(Game game) {
-        if (!debugMode) return;
-        
-        System.out.println("\n=== Game State ===");
-        System.out.println("Trump: " + game.getDeck().getTrumpSuit());
-        System.out.println("Cards in deck: " + game.getDeck().remainingCards());
-        
-        for (Player player : game.getPlayers()) {
-            System.out.print(player.getName() + ": ");
-            for (Card card : player.getHand()) {
-                System.out.print(card + " ");
+    /**
+     * Возвращает имя класса, вызвавшего логгер.
+     * @return имя класса
+     */
+    private static String getCallerClass() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < stackTrace.length; i++) {
+            StackTraceElement element = stackTrace[i];
+            if (!element.getClassName().equals(Logger.class.getName())) {
+                return element.getClassName();
             }
-            System.out.println();
         }
-        
-        System.out.println("Cards on table: ");
-        for (Card card : game.getCardsOnTable()) {
-            System.out.print(card + " ");
-        }
-        System.out.println("\n=====================\n");
-    }
-
-    public void logAttackDecision(Card card, boolean decision) {
-        if (debugMode) {
-            System.out.println("Attack decision " + card + ": " + 
-                (decision ? "CONTINUE" : "STOP"));
-        }
-    }
-
-    public void logDefenseDecision(Card attackCard, Card defendCard) {
-        if (debugMode && defendCard != null) {
-            System.out.println("Defend with " + defendCard + " against " + attackCard);
-        }
-    }
-
-    public void logMemoryState(CardMemory memory) {
-        if (!debugMode) return;
-        
-        System.out.println("=== Player Memory ===");
-        System.out.println("Known cards: " + memory.getKnownCards());
-        System.out.println("Played cards: " + memory.getPlayedCards());
-        System.out.println("===================");
-    }
-
-    public void logStrategyDecision(String strategy, String decision) {
-        if (debugMode) {
-            System.out.println("[" + strategy + "] " + decision);
-        }
-    }
-
-    public void logProbability(String card, double probability) {
-        if (debugMode) {
-            System.out.printf("Probability of having %s: %.2f%%\n", card, probability * 100);
-        }
+        return "Unknown";
     }
 }
