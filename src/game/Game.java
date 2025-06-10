@@ -312,4 +312,66 @@ public class Game {
         void onCardPlayed(Player player, Card card);
         void onGameEnded(Player winner);
     }
+
+
+    /**
+     * Обработка хода человека в фазе атаки
+     */
+    public boolean humanAttackTurn(Player humanPlayer, Card selectedCard) {
+        if (!isValidPlayerTurn(humanPlayer) || !humanPlayer.containsCard(selectedCard)) {
+            return false;
+        }
+        
+        if (!humanPlayer.canPlayCard(selectedCard, deck.getTrumpSuit())) {
+            return false;
+        }
+        
+        return playCard(humanPlayer, selectedCard);
+    }
+
+    /**
+     * Обработка хода человека в фазе защиты
+     */
+    public boolean humanDefendTurn(Player humanPlayer, Card attackCard, Card selectedCard) {
+        if (!isValidPlayerTurn(humanPlayer) || !humanPlayer.containsCard(selectedCard)) {
+            return false;
+        }
+        
+        if (!humanPlayer.canDefend(attackCard, selectedCard, deck.getTrumpSuit())) {
+            return false;
+        }
+        
+        return defendCard(humanPlayer, selectedCard);
+    }
+
+    /**
+     * Получение списка допустимых карт для атаки для человека
+     */
+    public List<Card> getHumanPlayableCards(Player humanPlayer) {
+        return humanPlayer.getPlayableCards(cardsOnTable);
+    }
+
+    /**
+     * Получение списка допустимых карт для защиты для человека
+     */
+    public List<Card> getHumanBeatableCards(Player humanPlayer, Card attackCard) {
+        return humanPlayer.getBeatableCards(attackCard, deck.getTrumpSuit());
+    }
+
+    /**
+     * Проверка, может ли человек сходить выбранной картой
+     */
+    public boolean canHumanPlayCard(Player humanPlayer, Card card) {
+        return humanPlayer.canPlayCard(card, deck.getTrumpSuit()) && 
+            humanPlayer.containsCard(card);
+    }
+
+    /**
+     * Проверка, может ли человек покрыть атакующую карту
+     */
+    public boolean canHumanDefendCard(Player humanPlayer, Card attackCard, Card defendCard) {
+        return defendCard != null && 
+            humanPlayer.containsCard(defendCard) && 
+            defendCard.beats(attackCard, deck.getTrumpSuit());
+    }
 }
