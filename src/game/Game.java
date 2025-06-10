@@ -314,64 +314,74 @@ public class Game {
     }
 
 
+
     /**
-     * Обработка хода человека в фазе атаки
+     * Метод для обработки хода человека в консоли
      */
-    public boolean humanAttackTurn(Player humanPlayer, Card selectedCard) {
-        if (!isValidPlayerTurn(humanPlayer) || !humanPlayer.containsCard(selectedCard)) {
-            return false;
+    public void handleHumanTurn(Player humanPlayer, Scanner scanner) {
+        List<Card> hand = humanPlayer.getHand();
+        boolean isDefending = !isAttackingPhase();
+        
+        System.out.println("\n=== Your Turn ===");
+        System.out.println("Your hand:");
+        for (int i = 0; i < hand.size(); i++) {
+            System.out.println((i + 1) + ". " + hand.get(i));
         }
         
-        if (!humanPlayer.canPlayCard(selectedCard, deck.getTrumpSuit())) {
-            return false;
+        if (isDefending) {
+            Card attackCard = cardsOnTable.get(0);
+            System.out.println("\nDefend against: " + attackCard);
+            List<Card> beatable = humanPlayer.getBeatableCards(attackCard, deck.getTrumpSuit());
+            
+            if (beatable.isEmpty()) {
+                System.out.println("No cards to defend. You have to take.");
+                return;
+            }
+            
+            System.out.println("Choose card to defend (0 to surrender):");
+            for (int i = 0; i < beatable.size(); i++) {
+                System.out.println((i + 1) + ". " + beatable.get(i));
+            }
+            
+            int choice = getValidChoice(scanner, beatable.size());
+            if (choice == 0) {
+                surrender(humanPlayer);
+                return;
+            }
+            
+            defendCard(humanPlayer, beatable.get(choice - 1));
+        } else {
+            List<Card> playable = humanPlayer.getPlayableCards(cardsOnTable);
+            System.out.println("Choose card to play (0 to surrender):");
+            
+            for (int i = 0; i < playable.size(); i++) {
+                System.out.println((i + 1) + ". " + playable.get(i));
+            }
+            
+            int choice = getValidChoice(scanner, playable.size());
+            if (choice == 0) {
+                surrender(humanPlayer);
+                return;
+            }
+            
+            playCard(humanPlayer, playable.get(choice - 1));
         }
-        
-        return playCard(humanPlayer, selectedCard);
     }
 
     /**
-     * Обработка хода человека в фазе защиты
+     * Получает валидный выбор пользователя
      */
-    public boolean humanDefendTurn(Player humanPlayer, Card attackCard, Card selectedCard) {
-        if (!isValidPlayerTurn(humanPlayer) || !humanPlayer.containsCard(selectedCard)) {
-            return false;
+    private int getValidChoice(Scanner scanner, int max) {
+        while (true) {
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 0 && choice <= max) {
+                    return choice;
+                }
+                System.out.println("Please enter a number between 0 and " + max + ":");
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number:");
+            }
         }
-        
-        if (!humanPlayer.canDefend(attackCard, selectedCard, deck.getTrumpSuit())) {
-            return false;
-        }
-        
-        return defendCard(humanPlayer, selectedCard);
-    }
-
-    /**
-     * Получение списка допустимых карт для атаки для человека
-     */
-    public List<Card> getHumanPlayableCards(Player humanPlayer) {
-        return humanPlayer.getPlayableCards(cardsOnTable);
-    }
-
-    /**
-     * Получение списка допустимых карт для защиты для человека
-     */
-    public List<Card> getHumanBeatableCards(Player humanPlayer, Card attackCard) {
-        return humanPlayer.getBeatableCards(attackCard, deck.getTrumpSuit());
-    }
-
-    /**
-     * Проверка, может ли человек сходить выбранной картой
-     */
-    public boolean canHumanPlayCard(Player humanPlayer, Card card) {
-        return humanPlayer.canPlayCard(card, deck.getTrumpSuit()) && 
-            humanPlayer.containsCard(card);
-    }
-
-    /**
-     * Проверка, может ли человек покрыть атакующую карту
-     */
-    public boolean canHumanDefendCard(Player humanPlayer, Card attackCard, Card defendCard) {
-        return defendCard != null && 
-            humanPlayer.containsCard(defendCard) && 
-            defendCard.beats(attackCard, deck.getTrumpSuit());
     }
 }
