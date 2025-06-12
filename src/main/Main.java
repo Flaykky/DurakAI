@@ -8,7 +8,6 @@ import game.Card;
 import game.Game;
 import game.*;
 import game.Player;
-import game.HumanPlayer;
 import game.Card.Suit;
 import game.Game.GameStateListener;
 import java.io.*;
@@ -26,13 +25,13 @@ public class Main {
             return;
         }
 
-        // Настройка логгирования
+        // Logging setup
         if (Arrays.asList(args).contains("--logFile")) {
             logToFile = true;
             setupFileLogger();
         }
 
-        // Определение игроков
+        // Player selection
         Player player1 = createPlayer(args[0], "Player 1");
         Player player2 = createPlayer(args[1], "Player 2");
 
@@ -41,7 +40,7 @@ public class Main {
             return;
         }
 
-        // Создание игры
+        // Game creation
         Game game = new Game(player1, player2);
         game.addGameStateListener(new Game.GameStateListener() {
             @Override
@@ -69,7 +68,7 @@ public class Main {
             }
         });
 
-        // Запуск игры
+        // Start the game
         game.startGame();
         playGame(game);
     }
@@ -108,7 +107,7 @@ public class Main {
             File logFile = new File("duruak_log_" + timestamp + ".log");
             fileLogger = new PrintStream(new FileOutputStream(logFile));
             
-            // Перехватываем стандартный вывод
+            // Intercept standard output
             System.setOut(new PrintStream(new OutputStream() {
                 @Override
                 public void write(int b) {
@@ -206,9 +205,11 @@ public class Main {
             Player currentPlayer = game.getCurrentPlayer();
             
             if (currentPlayer.isHuman()) {
-                handleHumanTurn((HumanPlayer) currentPlayer, game, scanner);
+                game.handleHumanTurn(currentPlayer, scanner);
             } else {
-                // Для ИИ просто вызываем playCard или defendCard
+                // AI plays as usual
+
+                // For AI just call playCard or defendCard
                 if (game.isAttackingPhase()) {
                     Card card = currentPlayer.playCard(game, game.getCardsOnTable());
                     if (card != null) {
