@@ -1,7 +1,53 @@
-# DurakAI
+# Durkai
 
-Durak is a popular Russian card game where the objective is to avoid being the last player with cards. This project is a Java implementation of Durak featuring an AI bot with multiple difficulty levels, capable of making strategic decisions based on game analysis.
+A Java implementation of the classic Russian card game "Durak" (Fool) featuring multiple AI difficulty levels and ASCII card visuals.
 
+## 📁 Project Structure
+
+```
+src/
+├── main/                     # Application entry point
+│   └── Main.java             # Main class with CLI interface
+├── ai/                       # AI player implementations
+│   ├── AIPlayer1lvl.java     # Level 1 AI (basic)
+│   ├── AIPlayer2lvl.java     # Level 2 AI (intermediate)
+│   └── level3/               # Level 3 AI (advanced)
+│       ├── AIPlayer3lvl.java
+│       ├── analysis/
+│       │   ├── GameAnalyzer.java
+│       │   └── ProbabilityEngine.java
+│       ├── memory/
+│       │   ├── CardMemory.java
+│       │   └── OpponentModel.java
+│       ├── strategy/
+│       │   ├── DefenseStrategy.java
+│       │   └── AttackStrategy.java
+│       └── utils/
+│           └── CardPatterns.java
+│   └── Logger.java           # Centralized logging system
+├── game/                     # Core game mechanics
+│   ├── Card.java             # Card representation
+│   ├── Deck.java             # Deck management
+│   ├── Player.java           # Abstract player class
+│   ├── HumanPlayer.java      # Human player implementation
+│   └── Game.java             # Game logic and state management
+└── utils/
+    └── ConsoleRenderer.java  # ASCII rendering utilities
+```
+
+
+## 🚀 Getting Started
+
+### Requirements
+- Java 17+
+- Git (for cloning repository)
+
+### Installation
+```bash
+git clone https://github.com/yourusername/durak-game.git
+cd durak-game
+javac -d out src/**/*.java
+```
 
 ## terminal set up
 If instead of symbols '♤♡♧♢' you see '?' in the terminal, use this command:
@@ -10,85 +56,122 @@ If instead of symbols '♤♡♧♢' you see '?' in the terminal, use this comma
 chcp 65001
 ```
 
+## 🎮 Running the Game
 
-## Features
-- **Fully functional Durak game in Java**
-- **AI bot with four levels of intelligence**
-- **Logging of AI decision-making process**
-- **Customizable rules and deck settings**
+### Game Modes
+```bash
+# AI vs AI with logging
+java -cp out Main 1lvl 2lvl --logFile
 
-## AI Levels
-1. **Basic AI** – Covers or attacks if possible without any strategy.
-2. **Intermediate AI** – Makes simple decisions such as covering with the lowest available card.
-3. **Advanced AI** – Implements strategic decision-making:
-   - Decides whether to cover or take a card based on value.
-   - Chooses between using a small trump or a high non-trump card.
-   - Determines whether to throw in extra cards based on known opponent weaknesses.
-   - Logs decisions, e.g., _"I need to cover Queen ♤, but my only trump is Ace ♡, so I take the card."_
-4. **Expert AI** – In addition to advanced AI features:
-   - Remembers all played cards.
-   - Simulates possible end-game scenarios to find a winning strategy.
-   - Predicts opponent hands based on observed gameplay.
+# Human vs AI
+java -cp out Main player 2lvl
 
-## Game Rules
-- The game is played with a deck of 36 cards (6–Ace in each suit).
-- Players take turns attacking and defending.
-- The trump suit is determined at the start of the game.
-- Players can throw in additional cards matching rank during an attack.
-- The defender must either cover all cards or pick up.
-- The game continues until one player runs out of cards; the last remaining player is the "durak."
-
-## AI Decision-Making Logic
-- **Covering:**
-  - If possible, cover with a lower-value card.
-  - Use a trump card only when necessary.
-- **Throwing in:**
-  - If the opponent has taken a card of a particular suit, prioritize throwing more of that suit.
-  - Ensure thrown-in cards don’t backfire.
-- **Endgame Strategy:**
-  - Keep track of played cards.
-  - Predict opponent’s possible moves.
-  - Choose a winning sequence when possible.
-
-## Logging System
-The AI logs its decisions in a structured format, e.g.:
-```
-[AI BOT?] I need to cover Queen ♠. My lowest option is 10♠, but I have a small trump 7♡.
-[AI BOT?] Using 10♠ to preserve my trump for later.
-[AI BOT?] Opponent picked up 8♣. I should throw in 9♣.
+# Help
+java -cp out Main --help
 ```
 
-**? -- is a level of AI**
+### Command Line Arguments
+| Mode                  | Command                          | Description                          |
+|-----------------------|----------------------------------|--------------------------------------|
+| AI vs AI              | `1lvl 2lvl`                      | Runs game between AI levels          |
+| Human vs AI           | `player 2lvl`                    | Human plays against AI               |
+| Logging               | `--logFile`                      | Creates .log file with game history  |
+| Help                  | `--help`                         | Shows command line usage             |
 
+## 🧠 AI System
 
+### AI Levels
+| Level | Strategy                          | Complexity |
+|-------|-----------------------------------|------------|
+| 1     | Plays first valid card            | Basic      |
+| 2     | Uses minimal necessary cards      | Medium     |
+| 3     | Memory + probability analysis     | Advanced   |
 
+### Level 1 AI
+- **Attack**: Plays first valid card
+- **Defense**: Plays first card that beats attacker
+- **No Strategy**: No consideration of trump cards or card value
 
-This allows for debugging and improvement of AI logic.
+### Level 2 AI
+- **Attack**: Plays lowest possible card
+- **Defense**: 
+  - Prioritizes non-trump cards
+  - Uses lowest valid trump as last resort
+- **Efficiency**: Preserves high-value cards
 
+### Level 3 AI (Planned)
+- **Memory System**: Tracks played cards
+- **Probability Engine**: Calculates win probabilities
+- **Opponent Modeling**: Learns from human patterns
+- **Advanced Strategy**: 
+  - Sacrifices low cards when needed
+  - Saves trumps for critical moments
 
-.lof file:
-```log
-[2023-10-25 14:30:22] [INFO] Game started
-[2023-10-25 14:30:22] [DEBUG] Dealing cards to players
-[2023-10-25 14:30:25] [INFO] Human attacked with 7♥️
-[2023-10-25 14:30:27] [INFO] AI defended with Q♠️
-[2023-10-25 14:31:10] [ERROR] Invalid card selection by Human
-[2023-10-25 14:35:40] [INFO] Game finished. Winner: AI
+## 📜 Logging System
+
+### Log Levels
+| Level   | Color  | Purpose                           |
+|---------|--------|-----------------------------------|
+| DEBUG   | Blue   | Detailed AI decision-making       |
+| INFO    | Green  | Game state changes                |
+| WARN    | Yellow | Potential issues                  |
+| ERROR   | Red    | Critical failures                 |
+
+### Log File Example
+```
+[2023-10-05 14:30:41] [main] [DEBUG] AIPlayer2lvl: Selected defense card: [Q♧]
+[2023-10-05 14:31:12] [main] [INFO] Game: Turn changed
+[2023-10-05 14:31:15] [main] [ERROR] Game: Invalid card selection. Try again.
 ```
 
-## Installation
-1. Clone the repository:
-   ```sh
-   git clone https://github.com/Flaykky/DurakAI
-   ```
-2. Compile and run the project:
-   ```sh
-   javac src/Main.java
-   java Main
-   ```
+## 🃏 Game Mechanics
 
-## Future Improvements
-- Enhancing AI memory and strategy for better end-game planning.
-- Adding multiplayer support.
-- Implementing a graphical interface.
+### Card Representation
+- **Suits**: ♤(Spades), ♡(Hearts), ♢(Diamonds), ♧(Clubs)
+- **Ranks**: 6-Ace (6,7,8,9,10,J,Q,K,A)
+- **Trump Suit**: Determines card hierarchy
 
+### Game Flow
+1. **Initialization**: 
+   - 36-card deck
+   - Initial draw of 6 cards
+   - Trump suit determined by first card
+
+2. **Turn Structure**:
+   - **Attack Phase**: Play cards of matching rank
+   - **Defense Phase**: Must beat attacking card
+   - **Card Draw**: Players refill hand to 6 cards
+
+3. **Winning Conditions**:
+   - First player to empty hand
+   - Opponent unable to defend
+
+## 🧪 Development Guide
+
+### Contributing
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/ai-level3`)
+3. Commit changes (`git commit -m 'Add level 3 AI'`)
+4. Push branch (`git push origin feature/ai-level3`)
+5. Open pull request
+
+### Code Style
+- Google Java Style Guide
+- Javadoc for all public classes and methods
+- Consistent use of ASCII card representation
+
+### Testing
+1. Unit tests for card comparison logic
+2. Integration tests for game flow
+3. AI performance benchmarks
+
+## 📄 License
+MIT License - see LICENSE file for details
+
+## 🧑‍🤝‍🧑 Acknowledgments
+- Original game concept: Traditional Russian "Durak"
+- ASCII art inspiration: Classic card games
+- AI design patterns: Game theory fundamentals
+```
+
+The markdown format makes it suitable for GitHub README files, documentation portals, or generating PDF documentation.
