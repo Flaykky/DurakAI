@@ -49,7 +49,7 @@ cd durak-game
 javac -d out src/**/*.java
 ```
 
-## terminal set up
+## 💻 Terminal set up
 If instead of symbols '♤♡♧♢' you see '?' in the terminal, use this command:
 
 ```powershell
