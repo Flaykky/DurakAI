@@ -7,7 +7,6 @@ import game.Card.Rank;
 import game.Player;
 import game.Deck;
 
-
 public class Game {
     private static final int INITIAL_CARDS = 6;
     private final Deck deck = new Deck();
@@ -47,14 +46,14 @@ public class Game {
             player.addCards(initialCards);
         }
         
-        // Сортировка рук по козырям
+        // Sort hands by trump suit
         for (Player player : players) {
             player.sortHand(deck.getTrumpSuit());
         }
     }
     
     private void determineFirstAttacker() {
-        // Определяем игрока с наименьшим козырем
+        // Determine the player with the lowest trump card
         Player minTrumpPlayer = null;
         Card minTrumpCard = null;
         
@@ -73,7 +72,7 @@ public class Game {
         if (minTrumpPlayer != null) {
             currentPlayerIndex = players.indexOf(minTrumpPlayer);
         } else {
-            // Если нет козырей, случайный выбор
+            // If no trumps, choose randomly
             currentPlayerIndex = new Random().nextInt(players.size());
         }
         
@@ -85,22 +84,22 @@ public class Game {
         if (gameOver) return;
         
         if (attackingPhase) {
-            // Завершение фазы атаки
+            // End of attack phase
             if (cardsOnTable.isEmpty()) {
-                // Если никто не сыграл, переход к следующему игроку
+                // If no one played, move to next player
                 endAttackPhase();
             } else {
-                // Переключение на защиту
+                // Switch to defense
                 attackingPhase = false;
                 defender = getNextPlayer(attacker);
             }
         } else {
-            // После защиты
+            // After defense
             if (cardsOnTable.isEmpty()) {
-                // Все карты покрыты, переход к следующему игроку
+                // All cards are covered, move to next player
                 endAttackPhase();
             } else {
-                // Если есть непокрытые карты, игрок забирает их
+                // If there are uncovered cards, defender takes them
                 handleFailedDefense();
             }
         }
@@ -110,26 +109,26 @@ public class Game {
     }
     
     private void endAttackPhase() {
-        // Передача хода
+        // Pass the turn
         attacker = defender;
         defender = getNextPlayer(attacker);
         attackingPhase = true;
         cardsOnTable.clear();
         firstTurn = false;
         
-        // Подбор карт
+        // Deal cards
         dealCards();
     }
     
     private void handleFailedDefense() {
-        // Защитник забирает карты
+        // Defender takes the cards
         defender.addCards(new ArrayList<>(cardsOnTable));
         cardsOnTable.clear();
         
-        // Подбор карт
+        // Deal cards
         dealCards();
         
-        // Переключение на следующего игрока
+        // Switch to next player
         defender = getNextPlayer(defender);
         attacker = defender;
         attackingPhase = true;
@@ -185,7 +184,7 @@ public class Game {
         cardsOnTable.add(defendCard);
         notifyCardPlayed(player, defendCard);
         
-        // Проверка завершения защиты
+        // Check if defense is complete
         if (cardsOnTable.size() == 2) {
             cardsOnTable.clear();
         }
@@ -202,7 +201,7 @@ public class Game {
             }
         }
         
-        // Если колода пуста и игроки не могут продолжать
+        // If deck is empty and players cannot continue
         if (deck.isEmpty() && !canContinueGame()) {
             gameOver = true;
             Player winner = determineWinner();
@@ -313,10 +312,8 @@ public class Game {
         void onGameEnded(Player winner);
     }
 
-
-
     /**
-     * Метод для обработки хода человека в консоли
+     * Handles a human player's turn in the console
      */
     public void handleHumanTurn(Player humanPlayer, Scanner scanner) {
         List<Card> hand = humanPlayer.getHand();
@@ -338,7 +335,7 @@ public class Game {
                 return;
             }
             
-            System.out.println("Choose card to defend (0 to surrender):");
+            System.out.println("Choose a card to defend with (0 to surrender):");
             for (int i = 0; i < beatable.size(); i++) {
                 System.out.println((i + 1) + ". " + beatable.get(i));
             }
@@ -352,7 +349,7 @@ public class Game {
             defendCard(humanPlayer, beatable.get(choice - 1));
         } else {
             List<Card> playable = humanPlayer.getPlayableCards(cardsOnTable);
-            System.out.println("Choose card to play (0 to surrender):");
+            System.out.println("Choose a card to play (0 to surrender):");
             
             for (int i = 0; i < playable.size(); i++) {
                 System.out.println((i + 1) + ". " + playable.get(i));
@@ -369,7 +366,7 @@ public class Game {
     }
 
     /**
-     * Получает валидный выбор пользователя
+     * Gets a valid user choice
      */
     private int getValidChoice(Scanner scanner, int max) {
         while (true) {
