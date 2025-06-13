@@ -167,11 +167,3 @@ java -cp out Main --help
 
 ## 📄 License
 MIT License - see LICENSE file for details
-
-## 🧑‍🤝‍🧑 Acknowledgments
-- Original game concept: Traditional Russian "Durak"
-- ASCII art inspiration: Classic card games
-- AI design patterns: Game theory fundamentals
-```
-
-The markdown format makes it suitable for GitHub README files, documentation portals, or generating PDF documentation.
