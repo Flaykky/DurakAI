@@ -165,5 +165,7 @@ java -cp out Main --help
 2. Integration tests for game flow
 3. AI performance benchmarks
 
-## 📄 License
-MIT License - see LICENSE file for details
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) file for details.
+
