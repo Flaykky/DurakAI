@@ -86,6 +86,7 @@ java -cp out Main --help
 | 1     | Plays first valid card            | Basic      |
 | 2     | Uses minimal necessary cards      | Medium     |
 | 3     | Memory + probability analysis     | Advanced   |
+| 4     | Knows all about your deck         | Expert     |
 
 ### Level 1 AI
 - **Attack**: Plays first valid card
