@@ -1,4 +1,4 @@
-# Durk AI
+# Durak AI
 
 A Java implementation of the classic Russian card game "Durak" (Fool) featuring multiple AI difficulty levels and ASCII card visuals.
 
